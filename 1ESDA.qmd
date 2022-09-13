@@ -1,0 +1,130 @@
+---
+title: "Exploratory Spatial Data Analysis"
+author: "Pravesh Tamang"
+format: 
+  revealjs:
+    scrollable: true
+    smaller: true
+---
+
+## Reference
+
+1. [Spatial Regression Models for the Social Sciences](Spatial Regression Models for the Social Sciences.pdf)
+
+Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see <https://quarto.org/docs/presentations/>.
+
+## The methods used in EDA
+- Some of the common methods used in EDA include
+  - graphical summary of data distribution
+  - using the summary statistics to describe the distribution of data
+  - relating the variables using graphics or statistics
+- With EDA researchers get familiar with data.
+- EDA provides an understanding of which method to use for inference.
+- EDA is recommended before fitting any regression model.
+
+## What to inspect during EDA?
+- Are the variables normally distributed?
+  - Transform the variables.
+- Do the $y$ and the $x$'s have linear relationships?
+  - Create higher-order and interaction terms.
+- Do the $x$'s have low correlations among themselves?
+  - Apply principal component or factor analysis to the $x$'s with high correlations and create new $x$'s.
+ 
+# Neighborhood Structure and Spatial Weight Matrix
+
+## Neighborhood structure
+- In-order to conduct ESDA and spatial regression modeling it is necessary to specify a neighborhood structure.
+- A neighborhood structure specifies the neighbors for each areal unit on a spatial lattice in the study area.
+- A neighborhood structure is required for areal data analysis 
+  - to specify spatial autocorrelation in the response variable or the regression errors
+  - account for spatial dependence using spatial regression models.
+  
+## Types of neighborhood structure
+
+:::: {.columns}
+
+:::{.column width="45%"}
+- **Contiguity based**
+  - Constructed on the basis of whether two areal units 'touch' each other.
+  - E.g. Rook's and Queen's cases
+  
+![Contiguity based](1ESDA_files\contiguity.PNG)
+:::
+
+:::{.column width="45%"}
+- **Distance based**
+  - Constructed on the basis of a specified number of nearest neighbors or the specified distance to potential neighbors. 
+  - E.g. construct a neighborhood structure in which each areal unit has a certain number of nearest neighbors.
+:::
+
+::::
+
+## A Spatial Weight Matrix
+- The neighborhood structure needs to be quantified to make it operational in ESDA and spatial regression modeling. This is done by the spatial weight matrix.
+- *A spatial weight matrix comprises spatial weights that each relates a variable (the response variable or regression errors) at one areal unit to the variable at neighboring areal units according to a prespecified neighborhood structure.*
+- Neighborhood structure - is a concept (or a map where you need to go).
+- A spatial weight matrix - is an operation (or how to get there).
+
+---
+
+![Considering 6 as our areal unit of interest and considering the first order **queen's contiguity** neighborhood structure.](1ESDA_files\lattice4x4.PNG)
+
+---
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+![Putting each cell in its own row and each cell in its own column we get a spatial weight matrix without row standardization.](1ESDA_files\spatial_weight_matrix_1.PNG)
+:::
+
+:::{.column width="40%"}
+
+- The number of neighbors is not the same for all the cells.
+- This results in larger weight sums for some cells and smaller sum weights for others.
+- Standardizing each row by dividing each cell by the sum of that row helps to deal with this problem.
+- Standardization also makes the interpretation of the ESDA and spatial regression model results more meaningful and easier to understand. 
+
+:::
+
+::::
+
+
+---
+
+
+![Standardized contiguity matrix.](1ESDA_files\contiguity_standardized.PNG)
+
+---
+
+**Fixed weight spatial matrix**
+
+- The neighbors of an areal units are weighted equally. They include:
+  - The rook's and queen's contiguity weight matrices.
+  - The *k*-nearest neighbor weight matrices
+  - The general distance weight matrices.
+
+**Variable Spatial Weight matrices**
+
+- The neighbors of an areal unit are weighted differently.
+- It can be constructed on the basis of a function or a variable.
+1. Weigh the neighbors based on the distances from their centroids to the centroid of an areal unit and use an inverse distance function to give the near neighbors more weight than the farther ones.
+$$
+w_{ij} = \frac{1}{d_{ij}} \text{if } d_{ij} \text{ is within distance } \delta(d_{ij}< \delta); 0 \text{ otherwise}
+$$
+  where, $d_{ij}$ is the distance between the areal unit $i$ and areal unit $j$, and $\theta$ is the threshold distance.
+
+  2. Weigh the neighbors based on lengths of boundaries that they share with an areal unit. This provides more weights to the neighbors that have a longer border with an areal unit.
+$$
+w_{ij} = \left(\frac{l_{ij}}{l_j}\right)^T
+$$
+  where, $l_{ij}$ is the length of the common border between the two areal units, and $l_j$ is the perimeter of areal unit $i$.
+
+## Which spatial matrix should we use?
+- Although the literature on the creation of spatial weights is large, there is limited theory on how to select a spatial weight matrix to be used.
+- Using spatial weight matrix guided by existing theories or relevant studies in your field is prudent.
+- For ESDA, it is appropriate to choose a spatial weight matrix that achieves high spatial autocorrelation in combination with a high level of significance.
+  - This is often measured by the Moran's *I* statistic based on the response variable.
+  - In addition, a *z*-score (the test for the significance of the Moran's *I* statistic) as the ratio of the Moran's *I* statistic and the corresponding standard error.
+- For spatial regression models, an appropriate spatial weight matrix is the one that captures high spatial dependence in the model residuals in combination with a high level of statistical significance.   
+
