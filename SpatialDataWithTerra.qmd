@@ -1,0 +1,173 @@
+---
+title: "Spatial Data Analysis with terra"
+format: 
+  html:
+    code-fold: true
+editor_options: 
+  chunk_output_type: console
+---
+
+## Vector data
+
+-   Vector data
+    -   points, lines, and polygons.
+-   Raster data
+    -   represent spatially continuous phenomenon such as elevation.
+
+### Simple representation of Spatial data
+
+-   Create a map of 10 weather stations named 'A' to 'J'
+
+```{r}
+name <- LETTERS[1:10]
+longitude <- c(-116.7, -120.4, -116.7, -113.5, -115.5,
+               -120.8, -119.5, -113.7, -113.7, -110.7)
+latitude <- c(45.3, 42.6, 38.9, 42.1, 35.7, 38.9,
+              36.2, 39, 41.6, 36.9)
+stations <- cbind(longitude, latitude)
+
+# simulated rainfall data
+set.seed(0)
+precip <- round((runif(length(latitude))*10)^3)
+
+
+library(tidyverse)
+d <- tibble(name, longitude, latitude,
+            lon = c(NA, NA,-116.8, -114.2, -112.9, -111.9, -114.2, -115.4, -117.7, NA),
+                    lat = c(NA, NA, 41.3, 42.9, 42.4, 39.8, 37.6, 38.3, 37.6, NA))
+ggplot(d, aes(x = longitude,
+                 y = latitude))+
+  geom_point(aes(size = (1+precip/500)))+
+  geom_text(aes(label = name), vjust = 1, hjust = 2, col = "blue") -> plot
+
+```
+
+We can also add lines and polygons
+```{r}
+# Add a polygon with lon and lat variables
+plot +
+  geom_polygon(aes(x = lon, y = lat), alpha = 0.5)+
+  geom_path(col = "red")
+```
+
+
+### The `terra` package
+
+### Creating a spatial vector objects
+```{r}
+library(terra)
+
+# Consider the dataset d
+d1 <- vect(d) 
+geom(d1)
+class(d1)
+```
+
+### Adding coordinates
+```{r}
+d1 <- vect(d, crs = "+proj=longlat +datum=WGS84")
+crs(d1)
+```
+
+### Adding attributes (variables) to spatial vector objects
+```{r}
+# First create a dataframe with the same number of rows as the geometries
+df <- tibble(ID = 1:length(d1),
+                 precip = precip) # we had generated precip before.
+
+d2 <- vect(as.matrix(d[, 2:3]),  atts = df, crs = "+proj=longlat +datum=WGS84") # the dataframe 'd' had to be changed
+# to a matrix before using the 'atts' argument
+
+```
+
+
+### Lines and polygons
+
+```{r}
+vect(as.matrix(d[, 2:3]), crs = "+proj=longlat +datum=WGS84", type = "lines") |> plot()
+vect(as.matrix(d[, 2:3]), crs = "+proj=longlat +datum=WGS84", type = "polygons") |> plot(col = "blue")
+
+```
+
+## Raster data
+- `SpatRaster` represents a multi-layer (multi-variable) raster data
+- Creating a `SpatRaster` from the scratch.
+```{r}
+r <- rast(ncol = 10, nrow = 10, xmin = -150, xmax = -80, ymin = 20, ymax = 60)
+```
+- This `SpatRaster` only knows about the location, resolution, etc. but does not have any values.
+- We can assign the values.
+```{r}
+values(r) <- 1:ncell(r)
+r
+```
+- We can plot this
+```{r}
+lon <- c(-116.8, -114.2, -112.9, -111.9, -114.2, -115.4, -117.7)
+lat <- c(41.3, 42.9, 42.4, 39.8, 37.6, 38.3, 37.6)
+lonlat <- cbind(id=1, part=1, lon, lat)
+pts <- vect(lonlat, type="points", crs="+proj=longlat +datum=WGS84")
+pols <- vect(lonlat, type="polygons", crs="+proj=longlat +datum=WGS84")
+
+plot(r)
+points(pts)
+lines(pols)
+```
+
+-  Multi layered objects can also be created and plotted.
+```{r}
+r2  <- r^2
+r3 <- sqrt(r)
+s <- c(r, r2, r3)
+plot(s)
+
+
+```
+
+### Reading and writing spatial data
+
+#### Vector files
+- The `shapefile` is the most commonly used file format for vector data.
+- The `shapefile` is a set of 3 or 4 files with the same name but with different extensions; `.shp, .shx, .dbf, .prg`.
+- Let's consider a shapefile that comes with the `terra` package.
+```{r}
+library(terra)
+system.file("ex/lux.shp", package = "terra") -> lux
+vect(lux) # the vect() returns the `SpatVector` objects
+```
+
+- The shapefile is used to create this `SpatVector` object, so we should say that "I have SpatCector of polygons in R" instead of "I have a shapefile in R".
+- The shapefile is one of many file formats for vector data.
+- To write new files use the `writeVector` method, and use the argument `overwrite = TRUE` if you want to overwrite an existing file.
+- To remove the file use `file.remove` or `unlink`.
+
+#### Raster files
+
+- The `rast` method can help read raster data in R.
+- To write raster data use `writeRaster` function.
+
+## Corodinate Reference System
+
+### Geodetic Datum
+- Datum is a reference framework for determining the coordinates *(latidtude, longitude and sometimes height)* of points on the Earth's surface.
+- The Earth is not a perfect sphere; it is an irregularly shaped ellipsoid, and accurately representing its surface requires a standardized reference system.
+- The most widely used geodetic datum was the World Geodetic System 1984 (WGS 84), which was adopted by the Global Positioning System (GPS) and became the standard for many mapping applications. However, other datums like North American Datum 1983 (NAD83) and European Datum 1950 (ED50) were also commonly used in specific regions before WGS 84 gained global prominence.
+
+###Projections
+
+- Transforms the 3D datum into a 2 dimensional planar (Cartesian) system.
+- A planar system is easier to use for certain calculations and making maps.
+- The different types of planar coordinate reference systems are referred to as “projections”. Examples are “Mercator”, “UTM”, “Robinson”, “Lambert”, “Sinusoidal” and “Albers”.
+- We can inspect the CRS as follows:
+```{r}
+vect(lux) |> crs()
+```
+
+### Changing the `crs`
+```{r}
+vect(lux) -> lux1
+crs(lux1) <- " "
+```
+
+
+
