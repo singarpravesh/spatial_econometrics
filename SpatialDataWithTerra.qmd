@@ -2,7 +2,7 @@
 title: "Spatial Data Analysis with terra"
 format: 
   html:
-    code-fold: true
+    toc: true
 editor_options: 
   chunk_output_type: console
 ---
@@ -153,7 +153,7 @@ vect(lux) # the vect() returns the `SpatVector` objects
 - The Earth is not a perfect sphere; it is an irregularly shaped ellipsoid, and accurately representing its surface requires a standardized reference system.
 - The most widely used geodetic datum was the World Geodetic System 1984 (WGS 84), which was adopted by the Global Positioning System (GPS) and became the standard for many mapping applications. However, other datums like North American Datum 1983 (NAD83) and European Datum 1950 (ED50) were also commonly used in specific regions before WGS 84 gained global prominence.
 
-###Projections
+### Projections
 
 - Transforms the 3D datum into a 2 dimensional planar (Cartesian) system.
 - A planar system is easier to use for certain calculations and making maps.
@@ -163,11 +163,73 @@ vect(lux) # the vect() returns the `SpatVector` objects
 vect(lux) |> crs()
 ```
 
-### Changing the `crs`
+### Assigning the `crs`
 ```{r}
 vect(lux) -> lux1
 crs(lux1) <- " "
+crs(lux1) <- "+proj=longlat +datum=WGS84" 
+```
+
+### Transformig vector data
+
+- We can transform data to a new data set with another CRS using the `project` method.
+
+```{r}
+
+# Our SpatVector lux1 has the CRS '+proj=longlat +datum=WGS84'
+lux1
+
+# Now we shall change it to Robinson projection using the 'project' method
+# Define the crs
+crs <- "+proj=robin +datum=WGS84" # here we use the Robinson projection
+rob <- terra::project(lux1, crs)
+rob
+
+lux2 <- project(rob, '+proj=longlat +datum=WGS84')
+lux2
 ```
 
 
+### Transforming raster data
+
+- Vector data can be transformed to planar and back without loss of precision.
+- This is not the case with raster data.
+- Raster data is composed of rectangular cells of the same size. It is not possible to transform cell by cell.
+
+## Vector data manipulation
+
+- Let's consider the `SpatVector` 'lux1' that we read from a shapefile in the `terra` package.
+
+```{r}
+lux1
+names(lux1)
+```
+
+- We can plot these data in many ways.
+
+```{r}
+plot(lux1, "NAME_2")
+```
+
+### Extract attributes or variables and geometry
+```{r}
+# Extract Variables by converting to a data frame
+as.data.frame(lux1) |>  
+  head()
+as.data.frame(lux1)[, "POP"] 
+
+# Extracting variables without converting
+lux1$POP
+
+# Geometry
+geom(lux1) |> head()
+
+
+```
+
+- You can also add a new variable to a `SpatVector` just as if it were a data frame.
+```{r}
+lux1$lets <- sample(letters, nrow(lux1))
+lux1
+```
 
