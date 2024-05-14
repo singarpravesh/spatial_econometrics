@@ -3,30 +3,32 @@ title: "Spatial Data Science"
 format: html
 editor: source
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ## Datum
-- The concept of absolute space and time indicates that there exists a fixed reference frame against which the positions and motions of objects can be measured.
-- The idea of a fixed datum is crutial to this concept of absolute space and time.
-- This provides a reference point from which the absolute positions and times of objects can be measured, in a manner analogous to how zero serves the natural origin for amounts (positive and negative).
-- For space, a datum involves more than one dimension.
-- The combination of datum and a measurement unit (scale) is a *reference system*.
+
+-   The concept of absolute space and time indicates that there exists a fixed reference frame against which the positions and motions of objects can be measured.
+-   The idea of a fixed datum is crutial to this concept of absolute space and time.
+-   This provides a reference point from which the absolute positions and times of objects can be measured, in a manner analogous to how zero serves the natural origin for amounts (positive and negative).
+-   For space, a datum involves more than one dimension.
+-   The combination of datum and a measurement unit (scale) is a *reference system*.
 
 ## Simple feature geometries
-- They are a way to describe the geometries of *features*.
-  - Features have a geometry, time properties, and attributes (that could include labels that describe the feature and/or have values that quantitatively measure it).
-- The seven most common simple features geometries are:    
-  - `POINT` - a single point geometry
-  - `MULTIPOINT` - set of points
-  - `LINESTRING` - two or more points connected by lines.
-  - `MULTILINESTRING` - set of linestrings
-  - `POLYGON` - exterior ring with zero or more inner rings, denoting holes
-  - `MULTIPOLYGON` - set of polygons
-  - `GEOMETRYCOLLECTION` - set of  the geometries above.
-  
+
+-   They are a way to describe the geometries of *features*.
+    -   Features have a geometry, time properties, and attributes (that could include labels that describe the feature and/or have values that quantitatively measure it).
+-   The seven most common simple features geometries are:
+    -   `POINT` - a single point geometry
+    -   `MULTIPOINT` - set of points
+    -   `LINESTRING` - two or more points connected by lines.
+    -   `MULTILINESTRING` - set of linestrings
+    -   `POLYGON` - exterior ring with zero or more inner rings, denoting holes
+    -   `MULTIPOLYGON` - set of polygons
+    -   `GEOMETRYCOLLECTION` - set of the geometries above.
+
 ![](https://r-spatial.org/book/03-Geometries_files/figure-html/fig-sfgeometries-1.png)
-  
+
 ## Reading data
 
 ```{r}
@@ -36,17 +38,46 @@ library(sf)
 (st_read(system.file("gpkg/nc.gpkg", package = "sf")) -> nc)
 ```
 
-- Here `.gpkg` is a *geopackage* file.
-- This file has only one *layer*.
+-   Here `.gpkg` is a *geopackage* file.
+-   This file has only one *layer*.
 
 ```{r}
 st_layers(system.file("gpkg/nc.gpkg", package = "sf"))
 ```
 
-
-## Writing data
+## Subsetting
 
 ```{r}
+plot(st_geometry(nc))
+plot(st_geometry(nc[1:5, ]))
+plot(st_geometry(nc[1:7, ]))
+```
+
+## Binary predicates
+
+```{r}
+st_intersects(nc[1:5, ], nc[1:7, ])
+plot(st_geometry(nc[1:7,]))
+plot(st_geometry(nc[1:5, ]), add= TRUE, border = "red")
 
 ```
 
+## The `stars` package
+
+-   Used for analysing raster and vector data cubes.
+-   
+
+```{r}
+tif <- system.file("tif/L7_ETMs.tif", package = "stars")
+library(stars)
+(r <- read_stars(tif))
+```
+
+-   Interpreting the output
+-   There are 3 dimensions and 1 attribute
+-   The 3 dimensions are
+    -   **x**, **y**, and **band**
+    -   **x** has 349 cells, **y** has 352 cells, and there are 6 **band**s
+    -   **band** refers to a dimension that represent different layers of data often associated with colours or wavelengths in raster dataset.
+-   The attribute is named *L7_ETMS.tif* and the min, max, mean, values are calculated
+-   
