@@ -3,7 +3,7 @@ title: "Spatial Data Science"
 format: html
 editor: source
 editor_options: 
-  chunk_output_type: inline
+  chunk_output_type: console
 ---
 
 ## Datum
@@ -65,7 +65,6 @@ plot(st_geometry(nc[1:5, ]), add= TRUE, border = "red")
 ## The `stars` package
 
 -   Used for analysing raster and vector data cubes.
--   
 
 ```{r}
 tif <- system.file("tif/L7_ETMs.tif", package = "stars")
@@ -80,4 +79,67 @@ library(stars)
     -   **x** has 349 cells, **y** has 352 cells, and there are 6 **band**s
     -   **band** refers to a dimension that represent different layers of data often associated with colours or wavelengths in raster dataset.
 -   The attribute is named *L7_ETMS.tif* and the min, max, mean, values are calculated
--   
+- The dimension table contains the following fields for each dimension:
+  - `from`: starting index
+  - `to`: ending index
+  - `offset`: dimension value at the start (edge) of the first pixel
+  - `delta`: cell size; negative delta values indicate that pixel index increases with decreasing dimension values
+  - `refsys`: reference system
+  - `point`: logical, indicates whether cell values have point support or cell support
+  - `x/y`: indicates whether a dimension is associated with a spatial raster x- or y-axis
+
+-   Point support and Cell support
+    -    **Point Support**:
+
+        -   Point support data represents spatial information at specific point locations, without any associated area or extent.
+
+        -   Examples include weather stations, survey points, or GPS coordinates.
+
+        -   Point support data is typically modeled as a vector data type, where each point has a unique coordinate pair (x,y) or (longitude, latitude).
+
+        -   Analysis and interpolation methods for point support data aim to estimate values at unsampled locations based on the surrounding point values.
+
+    -    **Cell Support**:
+
+        -   Cell support data represents spatial information as a grid or raster, where the space is divided into a regular array of cells or pixels.
+
+        -   Each cell has a value that represents the average, sum, or representative value within that cell's extent.
+
+        -   Examples include satellite imagery, digital elevation models (DEMs), and land cover maps.
+
+        -   Cell support data is typically modeled as a raster data type, where each cell has a unique row and column index, as well as a value.
+
+        -   Analysis and processing methods for cell support data often involve operations on the grid, such as filtering, resampling, or zonal statistics.
+
+        The main differences are:
+
+        -   Point support data represents specific locations, while cell support data represents a tessellated space.
+
+        -   Point support data is modeled as vector data, while cell support data is modeled as raster data.
+
+        -   Analysis of point support data focuses on interpolation, while analysis of cell support data focuses on grid-based operations.
+
+## Subsetting `stars` data cubes
+- In the `r` data cube we know that there are 3 dimensions and 1 attribute. 
+- The `offset` indicates the dimension value at  the start.
+- So we can filter the dataset using these values.
+- Here we use the `cubelyr` package to filter the data cube.
+- The `cubelyr` package in R provides a data cube backend for the dplyr package, which means it offers a specialized data structure and functionality to work with multidimensional data in a way that is compatible with dplyr's data manipulation workflows
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(cubelyr)
+r %>%  
+  filter(x < 300000, x  < 10000000)
+```
+
+- Particular cube slices can also be obtained by using `slice()`
+```{r}
+r %>% slice(band, 2)
+
+r %>%  slice(band, 1:3)
+
+r %>%  slice(band, c(1,4,6))
+```
+
+## Statistical modelling of Spatial Data
+
