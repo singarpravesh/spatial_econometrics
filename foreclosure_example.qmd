@@ -7,7 +7,6 @@ editor_options:
 toc: true
 ---
 
-
 The shapefile can be downloaded from <http://www.econ.uiuc.edu/~lab/workshop/foreclosures/>
 
 Let's load the `sf` package required to read the data. Along with it we shall also load the `tidyverse` for data maniuplation and visualisation.
@@ -18,6 +17,7 @@ library(tidyverse)
 ```
 
 We will read the data from the working directory. We will do this by using `st_read()` from the `sf` package.
+
 ```{r}
 chi <- st_read("foreclosures/foreclosures.shp")
 class(chi)
@@ -28,6 +28,7 @@ We will now summarise the variable of interest which is the number of violent cr
 ```{r}
 summary(chi$violent)
 ```
+
 We can also visualize the crime data in a map.
 
 ```{r}
@@ -38,16 +39,15 @@ ggplot()+
   scale_fill_distiller(palette = 7, direction = 1)
 ```
 
-
 The variables of interest in the dataset are
 
-- `est_fcs`: estimated count of foreclosure starts from Jan. 2007 through June 2008
-- `est_mtgs`: estimated number of active mortgages from Jan. 2007 through June 2008
-- `est_fcs_rt`: number of foreclosure starts divided by number of mortgages times 100
-- `bls_unemp`: June 2008 place or county unemployment rate
-- `totpop`: total population from 2000 Census
-- `violent`: number of violent crimes reported between Jan. 2007 through December 2008
-- `property`: number of property crimes reported between Jan. 2007 through December 2008
+-   `est_fcs`: estimated count of foreclosure starts from Jan. 2007 through June 2008
+-   `est_mtgs`: estimated number of active mortgages from Jan. 2007 through June 2008
+-   `est_fcs_rt`: number of foreclosure starts divided by number of mortgages times 100
+-   `bls_unemp`: June 2008 place or county unemployment rate
+-   `totpop`: total population from 2000 Census
+-   `violent`: number of violent crimes reported between Jan. 2007 through December 2008
+-   `property`: number of property crimes reported between Jan. 2007 through December 2008
 
 We can run a simple OLS and see that ignoring spatial dependence might lead to insignificant results.
 
@@ -59,15 +59,13 @@ summary(chi_ols)
 
 ## spatial dependence
 
-- Similar values appear close to each other, or cluster, in space (positive spatial autocorrelation or dependence) or neighboring values are dissimilar (negative spatial autocorrelation or dependence). 
+-   Similar values appear close to each other, or cluster, in space (positive spatial autocorrelation or dependence) or neighboring values are dissimilar (negative spatial autocorrelation or dependence).
 
-- Null spatial autocorrelation indicates that the spatial pattern is random.
+-   Null spatial autocorrelation indicates that the spatial pattern is random.
 
-- The existence of spatial autocorrelation can be determined using the following condition:
-$$
-Cov(y_i, y_j) \neq 0 \text{ for } i \neq j
-$$
-where $y_i$ and $y_j$ are observations at random locations $i$ and $j$.
+-   The existence of spatial autocorrelation can be determined using the following condition: $$
+    Cov(y_i, y_j) \neq 0 \text{ for } i \neq j
+    $$ where $y_i$ and $y_j$ are observations at random locations $i$ and $j$.
 
 First we need to create the spatial weights matrix based on the queen criterion. We will use the `poly2nb()` function from the `spdep` package to create the neighbourhood structure and spatial weights.
 
@@ -79,14 +77,14 @@ summary(chi_w)
 
 The output summary is for a spatial weights matrix (also known as a neighbor list) created using the `chi_w` object in R. Here's what each part of the summary means:
 
-- *Neighbour list object*: This indicates that the summary is for a spatial weights matrix object.
-- *Number of regions: 897*: There are 897 spatial units (e.g., polygons, points) in the dataset.
-- *Number of nonzero links: 6140*: There are 6,140 non-zero connections (links) between the spatial units. Non-zero links represent neighboring relationships.
-- *Percentage nonzero weights: 0.7631036*: Approximately 76.31% of the potential connections between spatial units are non-zero (i.e., neighbors).
-- *Average number of links: 6.845039*: On average, each spatial unit has about 6.85 neighboring units.
-- *Link number distribution*: This shows the frequency distribution of the number of links per spatial unit. For example, there is 1 spatial unit with 1 link, 5 spatial units with 2 links, and so on.
-- *1 least connected region: 866 with 1 link*: Spatial unit 866 has the fewest connections, with only 1 neighbor.
-- *2 most connected regions: 478 643 with 13 links*: Spatial units 478 and 643 have the most connections, with 13 neighbors each.
+-   *Neighbour list object*: This indicates that the summary is for a spatial weights matrix object.
+-   *Number of regions: 897*: There are 897 spatial units (e.g., polygons, points) in the dataset.
+-   *Number of nonzero links: 6140*: There are 6,140 non-zero connections (links) between the spatial units. Non-zero links represent neighboring relationships.
+-   *Percentage nonzero weights: 0.7631036*: Approximately 76.31% of the potential connections between spatial units are non-zero (i.e., neighbors).
+-   *Average number of links: 6.845039*: On average, each spatial unit has about 6.85 neighboring units.
+-   *Link number distribution*: This shows the frequency distribution of the number of links per spatial unit. For example, there is 1 spatial unit with 1 link, 5 spatial units with 2 links, and so on.
+-   *1 least connected region: 866 with 1 link*: Spatial unit 866 has the fewest connections, with only 1 neighbor.
+-   *2 most connected regions: 478 643 with 13 links*: Spatial units 478 and 643 have the most connections, with 13 neighbors each.
 
 ```{r}
 nb2listw(chi_w)
@@ -94,9 +92,8 @@ nb2listw(chi_w)
 
 ## Moran Plot
 
-- Moran plot is used to understand the nature and strength of spatial autocorrelation.
-- It is a scatter plot where the variable of interest is plotted against its spatial lag.
-
+-   Moran plot is used to understand the nature and strength of spatial autocorrelation.
+-   It is a scatter plot where the variable of interest is plotted against its spatial lag.
 
 ```{r}
 library(spdep)
@@ -104,10 +101,9 @@ moran.plot(chi$violent, listw = nb2listw(chi_w),
            pch = 20, labels = FALSE)
 ```
 
+-   The diamond markers in a Moran scatter plot indicate observations that have a high influence on the linear relationship between the data and its spatially lagged values.
 
-- The diamond markers in a Moran scatter plot indicate observations that have a high influence on the linear relationship between the data and its spatially lagged values.
-
-- In order to be able to interpret values as above or below the mean, and their quantities in terms of standard deviations, the variable of interest is usually standardized by subtracting its mean and dividing it by its standard deviation.
+-   In order to be able to interpret values as above or below the mean, and their quantities in terms of standard deviations, the variable of interest is usually standardized by subtracting its mean and dividing it by its standard deviation.
 
 ```{r}
 # scale() is used to standardize the variable of interest
@@ -115,7 +111,7 @@ moran.plot(as.vector(scale(chi$violent)), listw = nb2listw(chi_w),
            pch = 20, labels = FALSE)
 ```
 
-- The plot displays a positive relationship between both variables. This is associated with the presence of positive spatial autocorrelation: similar values tend to be located close to each other. This means that the overall trend is for high values to be close to other high values, and for low values to be surrounded by other low values. This however does not mean that this is only situation in the dataset: there can of course be particular cases where high values are surrounded by low ones, and viceversa. But it means that, if we had to summarize the main pattern of the data in terms of how clustered similar values are, the best way would be to say they are positively correlated and, hence, clustered over space.
+-   The plot displays a positive relationship between both variables. This is associated with the presence of positive spatial autocorrelation: similar values tend to be located close to each other. This means that the overall trend is for high values to be close to other high values, and for low values to be surrounded by other low values. This however does not mean that this is only situation in the dataset: there can of course be particular cases where high values are surrounded by low ones, and viceversa. But it means that, if we had to summarize the main pattern of the data in terms of how clustered similar values are, the best way would be to say they are positively correlated and, hence, clustered over space.
 
 ## Moran's test under randomisation.
 
@@ -125,22 +121,21 @@ moran.plot(as.vector(scale(chi$violent)), listw = nb2listw(chi_w),
 
 The output of the Moran's I test under randomization for the variable `chi$violent` can be interpreted as follows:
 
-1. **Moran's I statistic standard deviate**: The observed Moran's I value standardized by its expected value and standard deviation under the null hypothesis of no spatial autocorrelation is 25.883. This is a very large value, indicating strong positive spatial autocorrelation.
+1.  **Moran's I statistic standard deviate**: The observed Moran's I value standardized by its expected value and standard deviation under the null hypothesis of no spatial autocorrelation is 25.883. This is a very large value, indicating strong positive spatial autocorrelation.
 
-2. **p-value**: The p-value is less than 2.2e-16, which is essentially 0. This means there is overwhelming evidence to reject the null hypothesis of no spatial autocorrelation.
+2.  **p-value**: The p-value is less than 2.2e-16, which is essentially 0. This means there is overwhelming evidence to reject the null hypothesis of no spatial autocorrelation.
 
-3. **alternative hypothesis**: The alternative hypothesis is "greater", meaning the test is one-tailed and tests for positive spatial autocorrelation. A two-tailed test would be used to detect both positive and negative spatial autocorrelation.
+3.  **alternative hypothesis**: The alternative hypothesis is "greater", meaning the test is one-tailed and tests for positive spatial autocorrelation. A two-tailed test would be used to detect both positive and negative spatial autocorrelation.
 
-4. **Moran's I statistic**: The observed Moran's I value is 0.4728965789, indicating strong positive spatial autocorrelation. Values range from -1 to 1, with 0 indicating no spatial autocorrelation.
+4.  **Moran's I statistic**: The observed Moran's I value is 0.4728965789, indicating strong positive spatial autocorrelation. Values range from -1 to 1, with 0 indicating no spatial autocorrelation.
 
-5. **Expectation**: The expected value of Moran's I under the null hypothesis is -0.0011160714, which is close to the theoretical expectation of -1/(n-1) where n is the number of spatial units.
+5.  **Expectation**: The expected value of Moran's I under the null hypothesis is -0.0011160714, which is close to the theoretical expectation of -1/(n-1) where n is the number of spatial units.
 
-6. **Variance**: The variance of Moran's I under the null hypothesis is 0.0003354012. This is used to standardize the Moran's I statistic.
+6.  **Variance**: The variance of Moran's I under the null hypothesis is 0.0003354012. This is used to standardize the Moran's I statistic.
 
-The Moran's I test provides very strong evidence (p < 0.0000000000000002) that the variable `chi$violent` exhibits positive spatial autocorrelation, meaning nearby areas tend to have similar values. The observed Moran's I of 0.47 is much higher than its expected value under the null hypothesis of no spatial autocorrelation.
+The Moran's I test provides very strong evidence (p \< 0.0000000000000002) that the variable `chi$violent` exhibits positive spatial autocorrelation, meaning nearby areas tend to have similar values. The observed Moran's I of 0.47 is much higher than its expected value under the null hypothesis of no spatial autocorrelation.
 
 ## Moran's test under normality.
-
 
 ```{r}
 moran.test(chi$violent, listw = nb2listw(chi_w), randomisation = FALSE)
@@ -154,35 +149,39 @@ moran.test(chi$violent, listw = nb2listw(chi_w), randomisation = FALSE)
 
 In the Monte Carlo simulation of Moran's I for the variable `chi$violent`, the interpretation of the output is as follows:
 
-1. **Statistic**: The observed Moran's I statistic is 0.4729. This is the actual value of Moran's I calculated from the data.
+1.  **Statistic**: The observed Moran's I statistic is 0.4729. This is the actual value of Moran's I calculated from the data.
 
-2. **Observed Rank**: The observed rank is 100. This indicates where the observed Moran's I value falls within the distribution of Moran's I values obtained from the Monte Carlo simulations.
-    - The observed rank in the Monte Carlo simulation of Moran's I refers to the position of the observed Moran's I value within the distribution of Moran's I values generated from the random permutations. Specifically, the Monte Carlo approach works as follows:
+2.  **Observed Rank**: The observed rank is 100. This indicates where the observed Moran's I value falls within the distribution of Moran's I values obtained from the Monte Carlo simulations.
 
-      - The observed Moran's I value is calculated from the actual data.
-      - The values are randomly permuted among the spatial units many times (e.g., 99 or 999 times). This simulates the null hypothesis that the values are randomly distributed.
-      - For each random permutation, the Moran's I is calculated. This creates a distribution of Moran's I values under the null hypothesis.
-      - The position of the observed Moran's I value is determined within this distribution of simulated Moran's I values. This is the observed rank.
+    -   The observed rank in the Monte Carlo simulation of Moran's I refers to the position of the observed Moran's I value within the distribution of Moran's I values generated from the random permutations. Specifically, the Monte Carlo approach works as follows:
 
-        For example, if the observed rank is 100 out of 1000 simulations, it means the observed Moran's I value is greater than 100-1 = 99 of the simulated values. This provides an empirical p-value: p-value = (number of simulated values ≥ observed) / (number of simulations + 1) So with an observed rank of 100 out of 1000 simulations, the p-value would be (100) / (1000+1) = 0.099. The observed rank is a useful way to visualize where the observed Moran's I falls relative to the distribution expected under the null hypothesis. If it falls in the extreme upper or lower tail, it provides evidence of significant spatial autocorrelation.
-        
+        -   The observed Moran's I value is calculated from the actual data.
+
+        -   The values are randomly permuted among the spatial units many times (e.g., 99 or 999 times). This simulates the null hypothesis that the values are randomly distributed.
+
+        -   For each random permutation, the Moran's I is calculated. This creates a distribution of Moran's I values under the null hypothesis.
+
+        -   The position of the observed Moran's I value is determined within this distribution of simulated Moran's I values. This is the observed rank.
+
+            For example, if the observed rank is 100 out of 1000 simulations, it means the observed Moran's I value is greater than 100-1 = 99 of the simulated values. This provides an empirical p-value: p-value = (number of simulated values ≥ observed) / (number of simulations + 1) So with an observed rank of 100 out of 1000 simulations, the p-value would be (100) / (1000+1) = 0.099. The observed rank is a useful way to visualize where the observed Moran's I falls relative to the distribution expected under the null hypothesis. If it falls in the extreme upper or lower tail, it provides evidence of significant spatial autocorrelation.
+
 ```{r}
 plot(chi_mc)
 polygon(density(chi_mc$res), col="blue")
 ```
 
-- Monte Carlo simulated values versus actual Moran’s I value. Shaded region indicates density of simulated Moran’s I versus the actual value (the vertical line).
-- The actual Moran’s I (i.e. vertical line) is far outside the simulated data (shaded range) indicating a statistically significantly relationship.
+-   Monte Carlo simulated values versus actual Moran’s I value. Shaded region indicates density of simulated Moran’s I versus the actual value (the vertical line).
+-   The actual Moran’s I (i.e. vertical line) is far outside the simulated data (shaded range) indicating a statistically significantly relationship.
 
-3. **P-value**: The p-value is 0.01. This represents the probability of observing a Moran's I value as extreme as or more extreme than the observed value under the null hypothesis of no spatial autocorrelation. A p-value of 0.01 suggests that there is strong evidence to reject the null hypothesis in favor of the alternative hypothesis.
+3.  **P-value**: The p-value is 0.01. This represents the probability of observing a Moran's I value as extreme as or more extreme than the observed value under the null hypothesis of no spatial autocorrelation. A p-value of 0.01 suggests that there is strong evidence to reject the null hypothesis in favor of the alternative hypothesis.
 
-4. **Alternative Hypothesis**: The alternative hypothesis is "greater", indicating that the test is one-tailed and specifically looking for positive spatial autocorrelation.
+4.  **Alternative Hypothesis**: The alternative hypothesis is "greater", indicating that the test is one-tailed and specifically looking for positive spatial autocorrelation.
 
 With a p-value of 0.01, there is strong evidence to suggest that the variable `chi$violent` exhibits significant positive spatial autocorrelation. The observed Moran's I value of 0.4729 falls in the top 1% of the distribution of Moran's I values obtained from the Monte Carlo simulations, supporting the presence of spatial clustering in the data.
 
 *Randomization is specifically focused on testing the significance of observed patterns against random chance, while Monte Carlo simulation is a broader technique used for modeling and estimating outcomes by generating random samples or scenarios. In spatial analysis, both methods play important roles in assessing spatial patterns and relationships.*
 
----
+------------------------------------------------------------------------
 
 ## Local indicators
 
@@ -232,19 +231,18 @@ significance_map <- function(df, lisa, permutations = 999, alpha = .05) {
 }
 ```
 
+-   We will calculate the local Moran's I and create cluster maps.
 
-- We will calculate the local Moran's I and create cluster maps.
+-   Significance Maps:
 
-- Significance Maps:
-  - LISA significance maps evaluate the statistical significance of spatial patterns in the data.
-  - These maps assess the significance level at which each region contributes to the global spatial autocorrelation outcome.
-  - Significance is determined through a Monte Carlo randomization procedure, comparing actual LISA values to values obtained by random data reassignments.
-  - Actual LISA values are ranked relative to values produced by randomization, with top-ranked values considered statistically significant at specific levels (e.g., 0.001, 0.01, 0.05).
-  - Statistically significant results can be either very high or very low, indicating spatial clusters or outliers.
-  - LISA cluster maps help visualize spatial clusters of similar or dissimilar values, highlighting areas with significant spatial patterns.
-  - Significance maps provide insights into the statistical significance of these spatial patterns, identifying areas contributing strongly to global spatial autocorrelation.
-  - By combining LISA cluster maps and significance maps, analysts can understand which locations contribute most to the overall spatial pattern and in which direction.
-
+    -   LISA significance maps evaluate the statistical significance of spatial patterns in the data.
+    -   These maps assess the significance level at which each region contributes to the global spatial autocorrelation outcome.
+    -   Significance is determined through a Monte Carlo randomization procedure, comparing actual LISA values to values obtained by random data reassignments.
+    -   Actual LISA values are ranked relative to values produced by randomization, with top-ranked values considered statistically significant at specific levels (e.g., 0.001, 0.01, 0.05).
+    -   Statistically significant results can be either very high or very low, indicating spatial clusters or outliers.
+    -   LISA cluster maps help visualize spatial clusters of similar or dissimilar values, highlighting areas with significant spatial patterns.
+    -   Significance maps provide insights into the statistical significance of these spatial patterns, identifying areas contributing strongly to global spatial autocorrelation.
+    -   By combining LISA cluster maps and significance maps, analysts can understand which locations contribute most to the overall spatial pattern and in which direction.
 
 ```{r}
 library(rgeoda)
@@ -262,7 +260,7 @@ significance_map(chi, chi_local_moran)+
   tm_borders()
 ```
 
-- We can also create interactive maps
+-   We can also create interactive maps
 
 ```{r}
 tmap_mode("view")
@@ -273,9 +271,9 @@ lisa_map(chi, chi_local_moran) +
 tmap_mode("plot")
 ```
 
-# Permutations 
+## Permutations
 
-- To obtain higher significance levels, we need to use more permutations in the computation of the the local moran for each location. For instance, a pseudo pvalue of .00001 would require 999999 permutations. To get more permutations, we set permutations = 99999 in local_moran. It is important to note that the maximum number of permutations for this function is 99999.
+-   To obtain higher significance levels, we need to use more permutations in the computation of the the local moran for each location. For instance, a pseudo pvalue of .00001 would require 999999 permutations. To get more permutations, we set permutations = 99999 in local_moran. It is important to note that the maximum number of permutations for this function is 99999.
 
 ```{r}
 # compute the local moran using permutations
@@ -301,9 +299,28 @@ lisa_map(chi, chi_local_moran) +
             drop.units = FALSE)
 ```
 
+
+## Local Geary
+- It differs from the other global counterparts in that it uses squared differences rather than dissimilarity.
+- The Local Geary Statitic is:
+  $$LG_i = \Sigma_jw_{ij}(x_i-x_j)^2$$
+- The inference and interpretation is the same as that of the Local Moran statistic.
+- The locations with the Locl Geary statistic smaller than its mean can be identified as significant and having positive spatial autocorrelation. 
+
+```{r}
+# Calculate the local Geary
+
+local_geary(w = queen_weights(chi), chi[, "violent"]) -> chi_local_geary
+
+# Plot the cluster map
+lisa_map(chi, chi_local_geary)+
+  tm_borders()
+```
+
+
 ## References
 
-- <https://swampthingecology.org/blog/hot-spot-analysis-geospatial-data-analysis-in-rstats.-part-3/>
-- <https://spatialanalysis.github.io/handsonspatialdata/local-spatial-autocorrelation-1.html>
-- <http://darribas.org/gds19/content/labs/lab_06.html>
-- (Spatial_Econometrics_with_R_2020)<Spatial_Econometrics_with_R_2020.pdf>
+-   <https://swampthingecology.org/blog/hot-spot-analysis-geospatial-data-analysis-in-rstats.-part-3/>
+-   <https://spatialanalysis.github.io/handsonspatialdata/local-spatial-autocorrelation-1.html>
+-   <http://darribas.org/gds19/content/labs/lab_06.html>
+-   <Spatial_Econometrics_with_R_2020>(Spatial_Econometrics_with_R_2020.pdf)
