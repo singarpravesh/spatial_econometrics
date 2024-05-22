@@ -513,9 +513,31 @@ library(spatialreg)
 # MLE of spatial autoregressive models
 lagsarlm(violent ~ est_fcs_rt + bls_unemp, 
          data = chi,
-         listw = nb2listw(chi_w), zero.policy = TRUE) %>% summary()
+         listw = nb2listw(chi_w), zero.policy = TRUE) %>% summary() 
 
 ```
+
+>When zero.policy = TRUE, if a zone has no neighbors, the lagged value for that zone is assigned a value of zero. This is done to avoid missing values (NA) in the spatial weights matrix. For example, if you have a spatial weights matrix listw and a data vector x, and some zones in x have no neighbors, then:
+  - If `zero.policy = TRUE`, the lagged value for those zones without neighbors will be set to zero.
+  - If `zero.policy = FALSE` (the default), the lagged value for those zones without neighbors will be set to NA.
+Setting `zero.policy = TRUE` allows the analysis to proceed without errors due to missing values, but it may impact the results if the zones without neighbors are not truly zeros.
+
+The output provided is from the spatial lag model (SLM) fitted using the `lagsarlm()` function from the `spatialreg` package in R. Here is the interpretation of the results:
+
+  `Residuals`: The minimum, first quartile, median, third quartile, and maximum values of the residuals are reported. These residuals are from the spatial lag model.
+  `Type`: The type of spatial model fitted is a lag model, which means that a spatially lagged dependent variable is included as an explanatory variable.
+   `Coefficients`:
+        The intercept is -93.7885, with a standard error of 41.3162.
+        The coefficient for `est_fcs_rt` is 15.6822, with a standard error of 1.5600. This variable is highly significant (p-value < 2e-16).
+        The coefficient for `bls_unemp` is 8.8949, with a standard error of 5.2447. This variable is marginally significant (p-value = 0.08989).
+    `Rho (ρ)`: The estimate of the spatial autoregressive parameter (ρ) is 0.49037. This indicates a moderate degree of spatial autocorrelation in the dependent variable.
+    The p-value for the spatial autoregressive parameter (ρ) is reported as < 2.22e-16, which is extremely small and indicates very strong statistical significance. This means that the null hypothesis of `ρ = 0 `(no spatial autocorrelation) can be rejected at any reasonable significance level. The spatial lag term is highly significant in the model, confirming that there is a substantial degree of spatial dependence in the dependent variable. The very low p-value, along with the moderate estimate of ρ (0.49037), provides strong evidence that the dependent variable exhibits a moderate degree of positive spatial autocorrelation. This spatial dependence is appropriately captured by including the spatially lagged dependent variable (Wy) as an explanatory variable in the spatial lag model
+    `Likelihood Ratio (LR) Test`: The LR test value is 141.33, with a p-value < 2.22e-16. This test compares the spatial lag model to the non-spatial linear model. The highly significant p-value suggests that the spatial lag model provides a significantly better fit to the data.
+    `Wald Test`: The Wald statistic is 153.93, with a p-value < 2.22e-16. This test also assesses the significance of the spatial autoregressive parameter (ρ). The highly significant p-value confirms the importance of including the spatially lagged dependent variable in the model.
+    `Log Likelihood`: The log-likelihood value for the spatial lag model is -5738.047.
+    R`esidual Variance`: The maximum likelihood estimate of the residual variance (σ²) is 20200, with a standard deviation (σ) of 142.13.
+    `Model Information`: The number of observations is 897, and the number of parameters estimated is 5. The Akaike Information Criterion (AIC) for the spatial lag model is 11486, which is lower than the AIC for the non-spatial linear model (11625), indicating a better fit.
+   ` Moran's I Test`: The LM test for residual autocorrelation has a test value of 8.1464 and a p-value of 0.0043146. This suggests that there is still some residual spatial autocorrelation not accounted for by the spatial lag model.
 
 
 ## References
