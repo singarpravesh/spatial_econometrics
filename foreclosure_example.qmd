@@ -539,6 +539,8 @@ The output provided is from the spatial lag model (SLM) fitted using the `lagsar
     `Model Information`: The number of observations is 897, and the number of parameters estimated is 5. The Akaike Information Criterion (AIC) for the spatial lag model is 11486, which is lower than the AIC for the non-spatial linear model (11625), indicating a better fit.
    ` Moran's I Test`: The LM test for residual autocorrelation has a test value of 8.1464 and a p-value of 0.0043146. This suggests that there is still some residual spatial autocorrelation not accounted for by the spatial lag model.
 
+## Model diagnostics
+
 
 ## References
 
