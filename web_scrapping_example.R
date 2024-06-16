@@ -86,12 +86,9 @@ library(netstat) # find unused port
 library(rvest) # web scrape tables
 library(data.table) # for the rbindlist function
 
-rs_driver_object <- rsDriver(browser = 'chrome',
-                             chromever = "114.0.5735.90",
-                             verbose = F, # verbose = F to suppress any messages
-                             port = free_port()) # free_port() to find a free port to run the Selenium server
+rs_driver_object <- rsDriver(browser = 'firefox',
+                             verbose = F) # verbose = F to suppress any messages
 
-binman::list_versions("chromedriver")
 
 
 
