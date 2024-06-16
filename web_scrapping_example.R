@@ -74,9 +74,22 @@ sess %>% html_elements("#__next > div.HorizontalDefaultLayout_contentWrapper__Rv
 rows %>% html_element(".TopColleges2023_organizationName__J1lEV") %>% html_text()
 rows %>% html_element(".grant-aid") %>% html_text()
 
-
-
-
 web <- read_html("https://theordinary.com/en-de/100-plant-derived-squalane-face-oil-100398.html")
 web %>% html_elements("h1.product-name") %>% html_text()
+
+
+###################################################################################
+
+library(tidyverse) # for data wrangling
+library(RSelenium) # activate Selenium server
+library(netstat) # find unused port
+library(rvest) # web scrape tables
+library(data.table) # for the rbindlist function
+
+rs_driver_object <- rsDriver(browser = 'chrome')
+
+
+
+
+
 
