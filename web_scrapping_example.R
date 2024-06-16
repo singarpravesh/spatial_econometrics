@@ -86,13 +86,12 @@ library(netstat) # find unused port
 library(rvest) # web scrape tables
 library(data.table) # for the rbindlist function
 
-rs_driver_object <- rsDriver(browser = 'chrome',
-                             chromever = "114.0.5735.90",
-                             verbose = F, # verbose = F to suppress any messages
-                             port = free_port())
+rs_driver_object <- rsDriver(browser = "chrome",
+                                 chromever = "114.0.5735.90",
+                                 port = 9515L)
 binman::list_versions("chromedriver")
 remDr <- rs_driver_object$client
-remDr$open
+remDr$navigate("https://www.99acres.com/search/property/buy/kolkata?city=25&preference=S&area_unit=1&res_com=R")
 
 
 
