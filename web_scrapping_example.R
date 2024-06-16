@@ -86,11 +86,13 @@ library(netstat) # find unused port
 library(rvest) # web scrape tables
 library(data.table) # for the rbindlist function
 
-rs_driver_object <- rsDriver(browser = 'firefox',
-                             verbose = F) # verbose = F to suppress any messages
-
-
-
+rs_driver_object <- rsDriver(browser = 'chrome',
+                             chromever = "114.0.5735.90",
+                             verbose = F, # verbose = F to suppress any messages
+                             port = free_port())
+binman::list_versions("chromedriver")
+remDr <- rs_driver_object$client
+remDr$open
 
 
 
