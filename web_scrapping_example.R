@@ -11,13 +11,11 @@ library(dplyr)
 url <- "https://www.99acres.com"
 
 # Send a GET request to the URL
-page <- read_html_live("https://www.99acres.com/search/property/buy/kolkata?city=25&keyword=kolkata&preference=S&area_unit=1&res_com=R")
+page <- read_html("https://www.99acres.com/search/property/buy/kolkata?city=25&keyword=kolkata&preference=S&area_unit=1&res_com=R")
 
 
-locations <- page %>%  
-  html_elements("div.pageComponent.undefined") %>% 
-  html_elements("section") %>% 
-  html_elements("h2")  %>% html_text()
+ page %>%  
+  html_nodes(".tupleNew__priceValWrap")
 
 page %>% 
   html_elements("div") %>% 
