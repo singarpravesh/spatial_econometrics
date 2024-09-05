@@ -6,6 +6,8 @@ editor_options:
   chunk_output_type: inline
 ---
 
+Reference: <https://cran.r-project.org/web/packages/rdhs/vignettes/introduction.html>
+
 First we need to download the `rdhs` package from the github. For this we need the `devtools` package.
 
 ```{r, warning=FALSE, message=FALSE}
