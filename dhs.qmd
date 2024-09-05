@@ -1,0 +1,104 @@
+---
+title: "DHS"
+format: html
+editor: visual
+editor_options: 
+  chunk_output_type: inline
+---
+
+First we need to download the `rdhs` package from the github. For this we need the `devtools` package.
+
+```{r, warning=FALSE, message=FALSE}
+#install.packages('devtools')
+#devtools::install_github('ropensci/rdhs')
+
+library(rdhs)
+library(tidyverse)
+```
+
+Now we shall look at the indicators.
+
+```{r}
+dhs_indicators()[1,]
+dhs_indicators()[1:5, "Definition"]
+```
+
+Since there are a lot of indicators it would be easier to query using tags. First lets look at what these tags are by using the `dhs_tags()` function.
+
+```{r}
+# understanding grepl function
+# creating a string variable
+name <- c("CAR", "bIKE", "BICYCLE", "AEROPLANE")
+
+# passing ignore.case argument to the grepl() function
+grepl("bi", name, ignore.case = TRUE)
+
+name[grepl("bi", name, ignore.case = TRUE)]
+```
+
+```{r}
+# what are the tags?
+dhs_tags()
+
+# Lets say we want to view tags related to Malaria
+dhs_tags()[grepl("diarrhea", dhs_tags()$TagName, ignore.case = TRUE), ]
+```
+
+Now we can grab the data for India (say)
+
+```{r}
+dhs_data(tagIds = 20, countryIds = c("IA"), surveyYearStart = 2019) -> ia
+ia
+```
+
+```{r}
+# we shall now plot the number of children with diarrhea using the indicator IDs for India and this will be for the DHS survey years after 2010. 
+dhs_data(countryIds = "IA", indicatorIds = "CH_DIAR_C_DIA", surveyYearStart = 2010) %>% 
+  filter(ByVariableLabel == "Three years preceding the survey") %>% 
+  ggplot(aes(x = SurveyYear, y = Value))+
+  geom_point()
+```
+
+```{r}
+dhs_indicators(countryIds = "IA", indicatorIds = "CH_DIAR_C_DIA", )
+```
+
+## Downloading the datasets.
+
+```{r}
+# set your credentials
+set_rdhs_config(email = "pravesh.econ@presiuniv.ac.in",
+                project = "ecological study of health")
+```
+
+```{r}
+# dhs datasets
+dhs_datasets(countryIds = "IA",
+             surveyYearStart = 2020, fileFormat = "Flat") -> datasets
+str(datasets)
+```
+
+```{r}
+# download datasets
+kr <- get_datasets(datasets$FileName[7] ) 
+mr <- get_datasets(datasets$FileName[8])
+
+# read the data
+readRDS(mr$IAMR7EFL) -> mr_data 
+readRDS(kr$IAKR7EFL) -> kr_data
+
+# get variable labels
+get_variable_labels(mr_data) -> mr_data_var_labels
+get_variable_labels(kr_data) -> kr_data_var_labels
+
+search_variable_labels(kr_data, search_terms = "diarrhea")
+```
+
+```{r}
+mr_data %>% 
+  select(mv106) %>% 
+  table() %>% 
+  prop.table()
+
+
+```
