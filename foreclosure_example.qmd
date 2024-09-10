@@ -57,7 +57,7 @@ summary(chi_ols)
 
 ```
 
-## Spatial autocorreltaion and spatial heterogeniety
+## Spatial autocorrelation and spatial heterogeneity
 
 **Spatial Autocorrelation**
 
@@ -71,14 +71,7 @@ Spatial heterogeneity, on the other hand, refers to the variation in the mean or
 
 The main difference between spatial autocorrelation and spatial heterogeneity is that autocorrelation focuses on the similarity between nearby observations, while heterogeneity focuses on the variation in the mean or intensity of the spatial process across different locations.
 
-Autocorrelation:
-        Measures the similarity between nearby observations.
-        Focuses on the correlation between neighboring values.
-        Can be caused by various factors, including diffusion processes, attributional processes, and behavioral heterogeneity.
-    Heterogeneity:
-        Measures the variation in the mean or intensity of a spatial process across different locations.
-        Focuses on the differences in the characteristics of the spatial process across locations.
-        Can be caused by various factors, including differences in environmental conditions, population density, or other local factors.
+Autocorrelation: Measures the similarity between nearby observations. Focuses on the correlation between neighboring values. Can be caused by various factors, including diffusion processes, attributional processes, and behavioral heterogeneity. Heterogeneity: Measures the variation in the mean or intensity of a spatial process across different locations. Focuses on the differences in the characteristics of the spatial process across locations. Can be caused by various factors, including differences in environmental conditions, population density, or other local factors.
 
 **Examples**
 
@@ -326,13 +319,12 @@ lisa_map(chi, chi_local_moran) +
             drop.units = FALSE)
 ```
 
-
 ## Local Geary
-- It differs from the other global counterparts in that it uses squared differences rather than dissimilarity.
-- The Local Geary Statitic is:
-  $$LG_i = \Sigma_jw_{ij}(x_i-x_j)^2$$
-- The inference and interpretation is the same as that of the Local Moran statistic.
-- The locations with the Locl Geary statistic smaller than its mean can be identified as significant and having positive spatial autocorrelation. 
+
+-   It differs from the other global counterparts in that it uses squared differences rather than dissimilarity.
+-   The Local Geary Statitic is: $$LG_i = \Sigma_jw_{ij}(x_i-x_j)^2$$
+-   The inference and interpretation is the same as that of the Local Moran statistic.
+-   The locations with the Locl Geary statistic smaller than its mean can be identified as significant and having positive spatial autocorrelation.
 
 ```{r}
 # Calculate the local Geary
@@ -351,43 +343,54 @@ significance_map(chi, chi_local_geary) +
 
 ## Getis-Ord Statistic
 
-- This is also a local measure of spatial autocorrelation.
-- It is a ratio of the number of observations within a given range to the total count of points.
-- The Getis-Ord $G_i^*$ statistic has two versions that differ in whether they include the value at the given location when calculating the statistic:
-  1. **Gi statistic**:
-   - The Gi statistic consists of a ratio of the weighted average of the values in the neighboring locations to the sum of all values, excluding the value at the location ($x_i$).
-   - It is calculated as: $$G_i = \frac{\sum_{j \neq i} w_{ij} x_j}{\sum_{j \neq i} x_j}$$
+-   This is also a local measure of spatial autocorrelation.
 
-  2. **$G_i^*$ statistic**:
-   - The $G_i^*$ statistic includes the value $x_i$ in both the numerator and denominator.
-   - It is calculated as: $$G_i^* = \frac{\sum_j w_{ij} x_j}{\sum_j x_j}$$
-   - In this case, the denominator is constant across all observations and simply consists of the total sum of all values in the dataset.
+-   It is a ratio of the number of observations within a given range to the total count of points.
 
-- The $G_i^*$ statistic is the ratio of the average values in a window centered on an observation to the total sum of observations. It does not consider spatial outliers, unlike statistics like Local Moran's I.
+-   The Getis-Ord $G_i^*$ statistic has two versions that differ in whether they include the value at the given location when calculating the statistic:
 
-- The interpretation of both Getis-Ord statistics is straightforward:
+    1.  $G_i$ **statistic**:
 
-  - A value larger than the mean (or a positive z-value) suggests a High-High cluster or hot spot.
-  - A value smaller than the mean (or a negative z-value) indicates a Low-Low cluster or cold spot.
+    -   The $G_i$ statistic consists of a ratio of the weighted average of the values in the neighboring locations to the sum of all values, excluding the value at the location ($x_i$).
+    -   It is calculated as: $$G_i = \frac{\sum_{j \neq i} w_{ij} x_j}{\sum_{j \neq i} x_j}$$
 
-**What is the significance and implications of G and G* statistics in terms of their difference in not considering the value at the location x_i?**
+    2.  $G_i^*$ statistic:
 
-- The significance and implications of the G and G* statistics in terms of their difference in not considering the value at the location $x_i$ are as follows:
-    - G Statistic:
-    - The G statistic does not include the value at the given location $x_i$ when calculating the ratio of the weighted average of values in neighboring locations to the sum of all values, excluding the value at the location $x_i$.
-    - This exclusion of the value at the location allows the G statistic to focus solely on the relationship between neighboring values without the influence of the value at the specific location being analyzed.
-    - The G statistic provides insights into the spatial clustering of values based on neighboring observations, highlighting local spatial patterns without the direct impact of the value at the location of interest.
+    -   The $G_i^*$ statistic includes the value $x_i$ in both the numerator and denominator.
+    -   It is calculated as: $$G_i^* = \frac{\sum_j w_{ij} x_j}{\sum_j x_j}$$
+    -   In this case, the denominator is constant across all observations and simply consists of the total sum of all values in the dataset.
 
-    - $G*$ Statistic:
-    - In contrast, the G* statistic includes the value at the given location $x_i$ in both the numerator and denominator when calculating the ratio of the weighted average of values in neighboring locations to the sum of all values.
-    - By including the value at the location, the G* statistic provides a more comprehensive view of the spatial relationship between the value at the location and its neighbors, offering insights into the overall spatial clustering pattern that incorporates the specific location's value
-    - The G* statistic allows for a more holistic analysis of local spatial autocorrelation, considering the value at the location alongside neighboring values to assess the clustering of values in a spatial context
+-   The $G_i^*$ statistic is the ratio of the average values in a window centered on an observation to the total sum of observations. It does not consider spatial outliers, unlike statistics like Local Moran's I.
+
+-   The interpretation of both Getis-Ord statistics is straightforward:
+
+    -   A value larger than the mean (or a positive z-value) suggests a High-High cluster or hot spot.
+    -   A value smaller than the mean (or a negative z-value) indicates a Low-Low cluster or cold spot.
+
+**What is the significance and implications of G and G\* statistics in terms of their difference in not considering the value at the location x_i?**
+
+-   The significance and implications of the G and G\* statistics in terms of their difference in not considering the value at the location $x_i$ are as follows:
+    -   G Statistic:
+
+    -   The G statistic does not include the value at the given location $x_i$ when calculating the ratio of the weighted average of values in neighboring locations to the sum of all values, excluding the value at the location $x_i$.
+
+    -   This exclusion of the value at the location allows the G statistic to focus solely on the relationship between neighboring values without the influence of the value at the specific location being analyzed.
+
+    -   The G statistic provides insights into the spatial clustering of values based on neighboring observations, highlighting local spatial patterns without the direct impact of the value at the location of interest.
+
+    -   $G*$ Statistic:
+
+    -   In contrast, the G\* statistic includes the value at the given location $x_i$ in both the numerator and denominator when calculating the ratio of the weighted average of values in neighboring locations to the sum of all values.
+
+    -   By including the value at the location, the G\* statistic provides a more comprehensive view of the spatial relationship between the value at the location and its neighbors, offering insights into the overall spatial clustering pattern that incorporates the specific location's value
+
+    -   The G\* statistic allows for a more holistic analysis of local spatial autocorrelation, considering the value at the location alongside neighboring values to assess the clustering of values in a spatial context
 
 **What is the significance of not considering the outlier in the Getis-Ord statistic as compared to the Morans I?**
 
-- The significance of not considering outliers in the Getis-Ord statistic compared to Moran's I lies in the focused analysis of spatial clustering without the influence of extreme values. While Moran's I provides a more comprehensive view by considering both clusters and outliers, the Getis-Ord statistic is specifically tailored for hotspot analysis and identifying statistically significant spatial patterns without the interference of outliers.
+-   The significance of not considering outliers in the Getis-Ord statistic compared to Moran's I lies in the focused analysis of spatial clustering without the influence of extreme values. While Moran's I provides a more comprehensive view by considering both clusters and outliers, the Getis-Ord statistic is specifically tailored for hotspot analysis and identifying statistically significant spatial patterns without the interference of outliers.
 
-- Implementing the G statistic.
+-   Implementing the G statistic.
 
 ```{r}
 # Calculate the G statistic
@@ -403,7 +406,7 @@ significance_map(chi, chi_local_g)+
 
 ```
 
-- Implementing the G* statistic.
+-   Implementing the G\* statistic.
 
 ```{r}
 # Calculate the G statistic
@@ -419,16 +422,17 @@ significance_map(chi, chi_local_gstar)+
 
 ```
 
-**Interpretation of the cluster map:** 
+**Interpretation of the cluster map:**
 
-- Look for areas with similar values that cluster together (High-High or Low-Low clusters) or areas with contrasting values that cluster (High-Low or Low-High clusters) in the maps.
+-   Look for areas with similar values that cluster together (High-High or Low-Low clusters) or areas with contrasting values that cluster (High-Low or Low-High clusters) in the maps.
 
 **Interpretation of the Significance maps:**
 
-- Identify areas with significant positive spatial autocorrelation (hot spots) or negative spatial autocorrelation (cold spots) based on the p-values and z-scores in the maps.
+-   Identify areas with significant positive spatial autocorrelation (hot spots) or negative spatial autocorrelation (cold spots) based on the p-values and z-scores in the maps.
 
-- Increasing permutations gives us more detailed information about the significance at each location.
-- The level of significance 
+-   Increasing permutations gives us more detailed information about the significance at each location.
+
+-   The level of significance
 
 ```{r}
 # cluster map with alpha = 0.01 
@@ -443,31 +447,30 @@ significance_map(chi, chi_local_gstar, permutations = 9999, alpha = 0.01)+
 
 ## Linear regression and diagnostics for spatial dependence
 
-- Standard linear regression assumes independent errors.
-- A standard linear regression model in the matrix form
-$$
-Y_{\{n\times 1\}} = X_{\{n \times p\}}\beta_{\{p \times 1\}}  + \epsilon_{\{n \times 1\}}
-$$
-  where, $\epsilon$ is independently and identically and Normally distributed with zero mean and constant variance.
-  
-- $\beta$ can be estimated using OLS.
-- The model is linear in coefficients (i.e. the regression coefficients enter the model linearly via addition, subtraction or multiplication, but not division, exponentiation, or other non-linear forms).
+-   Standard linear regression assumes independent errors.
 
-- If the errors are spatially dependent the OLS estimate of $\beta$ will no longer be efficient (although it  will be normal and unbiased).
-- Distinct patterns in residuals may suggest departures from model assumptions and indicate nonlinearlty, unequal variances and non-normality.
+-   A standard linear regression model in the matrix form $$
+    Y_{\{n\times 1\}} = X_{\{n \times p\}}\beta_{\{p \times 1\}}  + \epsilon_{\{n \times 1\}}
+    $$ where, $\epsilon$ is independently and identically and Normally distributed with zero mean and constant variance.
 
-- Unequal variances, or heteroscedasticity, can be revealed with tests such as the Breusch-Pagan test (Breusch & Pagan, 1979) or the Koenker-Bassett test (Koenker & Bassett, 1982).
-- Nonnormality can be revealed using tests such as the Jarque-Bera test (Bera & Jarque, 1980), which has an asymptotic chi-squared distribution with two degrees of freedom
+-   $\beta$ can be estimated using OLS.
+
+-   The model is linear in coefficients (i.e. the regression coefficients enter the model linearly via addition, subtraction or multiplication, but not division, exponentiation, or other non-linear forms).
+
+-   If the errors are spatially dependent the OLS estimate of $\beta$ will no longer be efficient (although it will be normal and unbiased).
+
+-   Distinct patterns in residuals may suggest departures from model assumptions and indicate nonlinearlty, unequal variances and non-normality.
+
+-   Unequal variances, or heteroscedasticity, can be revealed with tests such as the Breusch-Pagan test (Breusch & Pagan, 1979) or the Koenker-Bassett test (Koenker & Bassett, 1982).
+
+-   Nonnormality can be revealed using tests such as the Jarque-Bera test (Bera & Jarque, 1980), which has an asymptotic chi-squared distribution with two degrees of freedom
 
 ## Diagnostics for spatial dependence
 
-- If there is clear evidence of spatial dependence, standard linear regression fitting may no longer be appropriate.
-- Tools for diagnosing spatial dependence, particularly spatial autocorrelation, include Moran’s I plot and Moran’s I statistic of the residuals.
-- The appropriateness of a spatial regression model with respect to spatial lag dependence and spatial error dependence can be partly indicated by
-• the Lagrange multiplier (LM) test (Bera & Yoon, 1993) and
-• the robust LM test.
-The LM test statistic follows a chi-squared distribution with one degree of freedom under the null hypothesis of no spatial dependence and can be used to reveal spatial dependence in the form of an omitted spatially lagged dependent variable and/or spatial error dependence (Anselin, 1988a). 
-- When the lag dependence and error dependence are both found to be statistically significant using the LM test, a robust LM test can reveal further spatial dependence (Baltagi & Yang, 2013). The robust/adjusted LM test can be used to diagnose spatial lag dependence in the presence of spatial error dependence and to diagnose spatial error dependence in the presence of a spatially lagged dependent variable (Anselin, Bera, Florax, & Yoon, 1996). MLE can be used to estimate the parameters in the appropriate spatial regression model indicated by the robust LM test.
+-   If there is clear evidence of spatial dependence, standard linear regression fitting may no longer be appropriate.
+-   Tools for diagnosing spatial dependence, particularly spatial autocorrelation, include Moran’s I plot and Moran’s I statistic of the residuals.
+-   The appropriateness of a spatial regression model with respect to spatial lag dependence and spatial error dependence can be partly indicated by • the Lagrange multiplier (LM) test (Bera & Yoon, 1993) and • the robust LM test. The LM test statistic follows a chi-squared distribution with one degree of freedom under the null hypothesis of no spatial dependence and can be used to reveal spatial dependence in the form of an omitted spatially lagged dependent variable and/or spatial error dependence (Anselin, 1988a).
+-   When the lag dependence and error dependence are both found to be statistically significant using the LM test, a robust LM test can reveal further spatial dependence (Baltagi & Yang, 2013). The robust/adjusted LM test can be used to diagnose spatial lag dependence in the presence of spatial error dependence and to diagnose spatial error dependence in the presence of a spatially lagged dependent variable (Anselin, Bera, Florax, & Yoon, 1996). MLE can be used to estimate the parameters in the appropriate spatial regression model indicated by the robust LM test.
 
 ```{r}
 # The LM test spatial lag
@@ -475,20 +478,19 @@ spdep::lm.RStests(chi_ols, listw = nb2listw(chi_w),
                   test = "RSlag")
 ```
 
-- The output provided is from the Rao's score (a.k.a Lagrange multiplier) diagnostics for spatial dependence. Here is the interpretation of the results:
+-   The output provided is from the Rao's score (a.k.a Lagrange multiplier) diagnostics for spatial dependence. Here is the interpretation of the results:
 
-    `RSlag`: This value, 182.18, represents the Rao's score for the spatial lag in the spatial dependence model.
-    `df`: The degrees of freedom associated with the Rao's score test is 1.
-   `p-value`: The p-value associated with the Rao's score test is less than 2.2e-16, indicating strong statistical significance.
+    `RSlag`: This value, 182.18, represents the Rao's score for the spatial lag in the spatial dependence model. `df`: The degrees of freedom associated with the Rao's score test is 1. `p-value`: The p-value associated with the Rao's score test is less than 2.2e-16, indicating strong statistical significance.
 
 Interpretation:
 
-  - The significant `p-value` (< 2.2e-16) suggests strong evidence of spatial dependence in the model.
-  - The Rao's score (LM) test has detected spatial autocorrelation in the the model, indicating that the errors are not spatially independent.
-  - This result implies that there is a spatial structure in the residuals that is not explained by the variables in the model, highlighting the presence of spatial autocorrelation that needs to be accounted for in the analysis.
-  
+-   The significant `p-value` (\< 2.2e-16) suggests strong evidence of spatial dependence in the model.
 
-- When you set test = "adjRSlag" in the RStests() function, it computes the adjusted Lagrange multiplier test for spatial dependence, considering the possible absence of a lagged dependent variable in the model. This adjusted test helps account for any missing spatially lagged dependent variable and provides a more robust assessment of spatial dependence in the linear model.
+-   The Rao's score (LM) test has detected spatial autocorrelation in the the model, indicating that the errors are not spatially independent.
+
+-   This result implies that there is a spatial structure in the residuals that is not explained by the variables in the model, highlighting the presence of spatial autocorrelation that needs to be accounted for in the analysis.
+
+-   When you set test = "adjRSlag" in the RStests() function, it computes the adjusted Lagrange multiplier test for spatial dependence, considering the possible absence of a lagged dependent variable in the model. This adjusted test helps account for any missing spatially lagged dependent variable and provides a more robust assessment of spatial dependence in the linear model.
 
 ```{r}
 # The LM test spatial lag
@@ -496,44 +498,53 @@ spdep::lm.RStests(chi_ols, listw = nb2listw(chi_w),
                   test = "adjRSlag")
 ```
 
-- If the errors are diagnosed to be spatially dependent, a common remedial measure is to expand the *standard linear regression models* to *spatial linear regression models*.
-- Most of these spatial regression models consider spatial lag dependence and/or spatial error dependence, two basic types of spatial dependence.
+-   If the errors are diagnosed to be spatially dependent, a common remedial measure is to expand the *standard linear regression models* to *spatial linear regression models*.
 
-- A spatial linear regression model can be considered a generalization of a standard linear regression model in that spatial models allow and explicitly account for spatial dependence in the error term. 
-- The usual regression coefficients of the explanatory variables $\beta$ and the variance of the error term $\sigma^2$ are the model parameters. 
-- The spatial regression models that are most commonly used also have a spatial dependence parameter $\rho$ measuring the strength of the spatial dependence. 
-- Both a variance weight matrix ($D$) and a spatial weight matrix ($W$) corresponding to a neighborhood structure are specified before the model is fitted. 
+-   Most of these spatial regression models consider spatial lag dependence and/or spatial error dependence, two basic types of spatial dependence.
+
+-   A spatial linear regression model can be considered a generalization of a standard linear regression model in that spatial models allow and explicitly account for spatial dependence in the error term.
+
+-   The usual regression coefficients of the explanatory variables $\beta$ and the variance of the error term $\sigma^2$ are the model parameters.
+
+-   The spatial regression models that are most commonly used also have a spatial dependence parameter $\rho$ measuring the strength of the spatial dependence.
+
+-   Both a variance weight matrix ($D$) and a spatial weight matrix ($W$) corresponding to a neighborhood structure are specified before the model is fitted.
 
 ## Spatial Lag Model
-- The mathematical meaning of the term "lagged" in the context of spatial analysis and statistics refers to a value or observation that is shifted in time or space relative to another value or observation.
-- For example, in calculating Moran's I, the lagged value of a variable at a given location is the value of the same variable at a neighboring location. The spatial autocorrelation statistic is then calculated based on the similarity or dissimilarity between the original values and their lagged counterparts.
-- A spatial lag model is specified as:
+
+-   The mathematical meaning of the term "lagged" in the context of spatial analysis and statistics refers to a value or observation that is shifted in time or space relative to another value or observation.
+-   For example, in calculating Moran's I, the lagged value of a variable at a given location is the value of the same variable at a neighboring location. The spatial autocorrelation statistic is then calculated based on the similarity or dissimilarity between the original values and their lagged counterparts.
+-   A spatial lag model is specified as:
 
 $$
 Y_{\{n\times 1\}} = X_{\{n \times p\}}\beta_{\{p \times 1\}} + \rho WY + \epsilon_{\{n \times 1\}}
-$$
-  where, $\rho$ is a scalar spatial lag parameter.
-  $W$ is a $n \times n$ spatial weight matrix
-  
-- $WY$ denotes a spatially lagged variable because it is a weighted average of the neighbourhood response variables.
+$$ where, $\rho$ is a scalar spatial lag parameter. $W$ is a $n \times n$ spatial weight matrix
 
-- When $\rho = 0$ the spatial lag model is reduced to the standard linear regression model.
-- The spatial lag model builds a relation between *the response variable in an areal unit* with *a weighted average of the response variable at the neighbouring areal units*.
+-   $WY$ denotes a spatially lagged variable because it is a weighted average of the neighbourhood response variables.
+
+-   When $\rho = 0$ the spatial lag model is reduced to the standard linear regression model.
+
+-   The spatial lag model builds a relation between *the response variable in an areal unit* with *a weighted average of the response variable at the neighbouring areal units*.
 
 ## Model fitting
 
-- OLS is limited in case of Spatial lag models because it does not directly account for spatial dependence in data.
-- The Maximum Likelihood Estimation (MLE) is appropriate.
-- MLE selects the set of parameter estimates (the coefficients and spatial parameters) that results in the maximum likelihood (i.e., the largest probability) of the observed data .
-- Intuitively, there could be an infinite number of combinations of the parameters, and each set results in a likelihood value. 
-- Among all the likelihood values, we want the parameters that make the data most probable with the highest likelihood. The resulting parameters are called maximum likelihood estimates.
+-   OLS is limited in case of Spatial lag models because it does not directly account for spatial dependence in data.
 
-- In the likelihood inference framework, the often-used measures of the goodness of the model fit include maximum log-likelihood value, Akaike’s information criterion (AIC) (Akaike, 1973), and Schwartz’s Bayesian
-information criterion (BIC) (Schwartz, 1978). 
-- Nested models (simpler models reduced from another more complex model after constraining certain parameters in the complex model) can be compared by a likelihood ratio test (LRT). 
-- For nonnested models, AIC and BIC are often used; they measure the model fitting to the data but penalize overly complex models. 
-- Models having a smaller AIC or a smaller BIC are considered the
-better models in the sense of model fitting balanced with model parsimony.
+-   The Maximum Likelihood Estimation (MLE) is appropriate.
+
+-   MLE selects the set of parameter estimates (the coefficients and spatial parameters) that results in the maximum likelihood (i.e., the largest probability) of the observed data .
+
+-   Intuitively, there could be an infinite number of combinations of the parameters, and each set results in a likelihood value.
+
+-   Among all the likelihood values, we want the parameters that make the data most probable with the highest likelihood. The resulting parameters are called maximum likelihood estimates.
+
+-   In the likelihood inference framework, the often-used measures of the goodness of the model fit include maximum log-likelihood value, Akaike’s information criterion (AIC) (Akaike, 1973), and Schwartz’s Bayesian information criterion (BIC) (Schwartz, 1978).
+
+-   Nested models (simpler models reduced from another more complex model after constraining certain parameters in the complex model) can be compared by a likelihood ratio test (LRT).
+
+-   For nonnested models, AIC and BIC are often used; they measure the model fitting to the data but penalize overly complex models.
+
+-   Models having a smaller AIC or a smaller BIC are considered the better models in the sense of model fitting balanced with model parsimony.
 
 ```{r}
 library(spatialreg)
@@ -544,30 +555,13 @@ lagsarlm(violent ~ est_fcs_rt + bls_unemp,
 
 ```
 
->When zero.policy = TRUE, if a zone has no neighbors, the lagged value for that zone is assigned a value of zero. This is done to avoid missing values (NA) in the spatial weights matrix. For example, if you have a spatial weights matrix listw and a data vector x, and some zones in x have no neighbors, then:
-  - If `zero.policy = TRUE`, the lagged value for those zones without neighbors will be set to zero.
-  - If `zero.policy = FALSE` (the default), the lagged value for those zones without neighbors will be set to NA.
-Setting `zero.policy = TRUE` allows the analysis to proceed without errors due to missing values, but it may impact the results if the zones without neighbors are not truly zeros.
+> When zero.policy = TRUE, if a zone has no neighbors, the lagged value for that zone is assigned a value of zero. This is done to avoid missing values (NA) in the spatial weights matrix. For example, if you have a spatial weights matrix listw and a data vector x, and some zones in x have no neighbors, then: - If `zero.policy = TRUE`, the lagged value for those zones without neighbors will be set to zero. - If `zero.policy = FALSE` (the default), the lagged value for those zones without neighbors will be set to NA. Setting `zero.policy = TRUE` allows the analysis to proceed without errors due to missing values, but it may impact the results if the zones without neighbors are not truly zeros.
 
 The output provided is from the spatial lag model (SLM) fitted using the `lagsarlm()` function from the `spatialreg` package in R. Here is the interpretation of the results:
 
-  `Residuals`: The minimum, first quartile, median, third quartile, and maximum values of the residuals are reported. These residuals are from the spatial lag model.
-  `Type`: The type of spatial model fitted is a lag model, which means that a spatially lagged dependent variable is included as an explanatory variable.
-   `Coefficients`:
-        The intercept is -93.7885, with a standard error of 41.3162.
-        The coefficient for `est_fcs_rt` is 15.6822, with a standard error of 1.5600. This variable is highly significant (p-value < 2e-16).
-        The coefficient for `bls_unemp` is 8.8949, with a standard error of 5.2447. This variable is marginally significant (p-value = 0.08989).
-    `Rho (ρ)`: The estimate of the spatial autoregressive parameter (ρ) is 0.49037. This indicates a moderate degree of spatial autocorrelation in the dependent variable.
-    The p-value for the spatial autoregressive parameter (ρ) is reported as < 2.22e-16, which is extremely small and indicates very strong statistical significance. This means that the null hypothesis of `ρ = 0 `(no spatial autocorrelation) can be rejected at any reasonable significance level. The spatial lag term is highly significant in the model, confirming that there is a substantial degree of spatial dependence in the dependent variable. The very low p-value, along with the moderate estimate of ρ (0.49037), provides strong evidence that the dependent variable exhibits a moderate degree of positive spatial autocorrelation. This spatial dependence is appropriately captured by including the spatially lagged dependent variable (Wy) as an explanatory variable in the spatial lag model
-    `Likelihood Ratio (LR) Test`: The LR test value is 141.33, with a p-value < 2.22e-16. This test compares the spatial lag model to the non-spatial linear model. The highly significant p-value suggests that the spatial lag model provides a significantly better fit to the data.
-    `Wald Test`: The Wald statistic is 153.93, with a p-value < 2.22e-16. This test also assesses the significance of the spatial autoregressive parameter (ρ). The highly significant p-value confirms the importance of including the spatially lagged dependent variable in the model.
-    `Log Likelihood`: The log-likelihood value for the spatial lag model is -5738.047.
-    R`esidual Variance`: The maximum likelihood estimate of the residual variance (σ²) is 20200, with a standard deviation (σ) of 142.13.
-    `Model Information`: The number of observations is 897, and the number of parameters estimated is 5. The Akaike Information Criterion (AIC) for the spatial lag model is 11486, which is lower than the AIC for the non-spatial linear model (11625), indicating a better fit.
-   ` Moran's I Test`: The LM test for residual autocorrelation has a test value of 8.1464 and a p-value of 0.0043146. This suggests that there is still some residual spatial autocorrelation not accounted for by the spatial lag model.
+`Residuals`: The minimum, first quartile, median, third quartile, and maximum values of the residuals are reported. These residuals are from the spatial lag model. `Type`: The type of spatial model fitted is a lag model, which means that a spatially lagged dependent variable is included as an explanatory variable. `Coefficients`: The intercept is -93.7885, with a standard error of 41.3162. The coefficient for `est_fcs_rt` is 15.6822, with a standard error of 1.5600. This variable is highly significant (p-value \< 2e-16). The coefficient for `bls_unemp` is 8.8949, with a standard error of 5.2447. This variable is marginally significant (p-value = 0.08989). `Rho (ρ)`: The estimate of the spatial autoregressive parameter (ρ) is 0.49037. This indicates a moderate degree of spatial autocorrelation in the dependent variable. The p-value for the spatial autoregressive parameter (ρ) is reported as \< 2.22e-16, which is extremely small and indicates very strong statistical significance. This means that the null hypothesis of `ρ = 0`(no spatial autocorrelation) can be rejected at any reasonable significance level. The spatial lag term is highly significant in the model, confirming that there is a substantial degree of spatial dependence in the dependent variable. The very low p-value, along with the moderate estimate of ρ (0.49037), provides strong evidence that the dependent variable exhibits a moderate degree of positive spatial autocorrelation. This spatial dependence is appropriately captured by including the spatially lagged dependent variable (Wy) as an explanatory variable in the spatial lag model `Likelihood Ratio (LR) Test`: The LR test value is 141.33, with a p-value \< 2.22e-16. This test compares the spatial lag model to the non-spatial linear model. The highly significant p-value suggests that the spatial lag model provides a significantly better fit to the data. `Wald Test`: The Wald statistic is 153.93, with a p-value \< 2.22e-16. This test also assesses the significance of the spatial autoregressive parameter (ρ). The highly significant p-value confirms the importance of including the spatially lagged dependent variable in the model. `Log Likelihood`: The log-likelihood value for the spatial lag model is -5738.047. R`esidual Variance`: The maximum likelihood estimate of the residual variance (σ²) is 20200, with a standard deviation (σ) of 142.13. `Model Information`: The number of observations is 897, and the number of parameters estimated is 5. The Akaike Information Criterion (AIC) for the spatial lag model is 11486, which is lower than the AIC for the non-spatial linear model (11625), indicating a better fit. `Moran's I Test`: The LM test for residual autocorrelation has a test value of 8.1464 and a p-value of 0.0043146. This suggests that there is still some residual spatial autocorrelation not accounted for by the spatial lag model.
 
 ## Model diagnostics
-
 
 ## References
 

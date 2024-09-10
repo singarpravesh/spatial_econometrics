@@ -93,6 +93,8 @@ readRDS(kr$IAKR7EFL) -> kr_data
 get_variable_labels(mr_data) -> mr_data_var_labels
 get_variable_labels(kr_data) -> kr_data_var_labels
 
+
+
 search_variable_labels(kr_data, search_terms = "diarrhea")
 ```
 
