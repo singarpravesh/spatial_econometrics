@@ -82,25 +82,47 @@ str(datasets)
 
 ```{r}
 # download datasets
-kr <- get_datasets(datasets$FileName[7] ) 
+kr <- get_datasets(datasets$FileName[7]) 
 mr <- get_datasets(datasets$FileName[8])
 
 # read the data
 readRDS(mr$IAMR7EFL) -> mr_data 
 readRDS(kr$IAKR7EFL) -> kr_data
 
-# get variable labels
+# get variable labels/definitions
 get_variable_labels(mr_data) -> mr_data_var_labels
 get_variable_labels(kr_data) -> kr_data_var_labels
 
+# search  the variables that we need after checking the labels
+search_variables(datasets$FileName[7:8], variables = c('mv106', 'mv107', 'mv130'))-> variables
 
+# now extract the data
+extract_dhs(variables, add_geo= TRUE) -> final_data_mr
 
-search_variable_labels(kr_data, search_terms = "diarrhea")
+# convert the haven labelled columns and list to a tibble
+process_hvn_lbll <- function(df) {
+  df %>%
+    mutate(across(where(~ inherits(.x, "hvn_lbll")), as.character)) # Or as_factor, as.vector
+}
+
+# Process all data frames in the list
+final_data_mr <- map(final_data_mr, function(item) {
+  if (is.data.frame(item)) {
+    process_hvn_lbll(item)
+  } else {
+    item
+  }
+})
+
+# Combine into a single data frame
+final_df_mr <- bind_rows(final_data_mr) %>% as_tibble()
+
+summary(final_df)
 ```
 
 ```{r}
-mr_data %>% 
-  select(mv106) %>% 
+final_df_mr %>% 
+  select(mv106, mv107, mv130) %>% 
   table() %>% 
   prop.table()
 
