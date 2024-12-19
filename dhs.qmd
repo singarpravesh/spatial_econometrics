@@ -3,7 +3,7 @@ title: "DHS"
 format: html
 editor: visual
 editor_options: 
-  chunk_output_type: inline
+  chunk_output_type: console
 ---
 
 Reference: <https://cran.r-project.org/web/packages/rdhs/vignettes/introduction.html>
@@ -70,17 +70,34 @@ dhs_indicators(countryIds = "IA", indicatorIds = "CH_DIAR_C_DIA", )
 ```{r}
 # set your credentials
 set_rdhs_config(email = "pravesh.econ@presiuniv.ac.in",
-                project = "ecological study of health")
+                project = "ecological study of health",
+                config_path = "~/.rdhs.json",
+                data_frame = "data.table::as.data.table",
+                global = TRUE,
+                verbose_download = FALSE,
+                timeout = 1000)
 ```
 
 ```{r}
+# the first time we call this function, rdhs will make the API request
+microbenchmark::microbenchmark(dhs_surveys(surveyYear = 2020),times = 1)
 # dhs datasets
 dhs_datasets(countryIds = "IA",
              surveyYearStart = 2020, fileFormat = "Flat") -> datasets
+
 str(datasets)
 ```
 
 ```{r}
+gc()
+
+# download all datasets
+
+get_datasets(datasets$FileName) -> all_data
+
+
+
+
 # download datasets
 kr <- get_datasets(datasets$FileName[7]) 
 mr <- get_datasets(datasets$FileName[8])
@@ -89,10 +106,50 @@ cr <- get_datasets(datasets$FileName[2])
 hr <- get_datasets(datasets$FileName[5])
 
 # read the data
-readRDS(mr$IAMR7EFL) -> mr_data 
+readRDS(mr$IAMR7EFL) %>% 
+  rename(caseid = mcaseid) -> mr_data 
 readRDS(kr$IAKR7EFL) -> kr_data
 readRDS(br$IABR7EFL) -> br_data
 readRDS(cr$IACR7EFL) -> cr_data
+
+# select only the required variables
+mr_data %>% 
+  select(c('caseid','mv501', 'mv130', 'mv131',  
+           'mv102',  'mv130', 'mv131', 'mv024')) -> final_data_mr
+
+br_data %>% 
+  select(c('caseid','v101','v218', 'v121', 'v130', 'v131', 'v133', 'v150',
+           'v151', 'v152',  'v106')) -> final_data_br
+
+kr_data %>% 
+  select(c('caseid','h9a', 'h57', 'h58')) -> final_data_kr
+
+
+cr_data %>% 
+  select(c('caseid','v101', 'v130', 'v131')) -> final_data_cr
+
+# join all the data
+final_data_br %>% 
+  left_join(final_data_kr, join_by(caseid)) %>% 
+  left_join(final_data_mr, join_by(caseid)) %>% 
+  left_join(final_data_cr, join_by(caseid)) -> immunization_data
+
+write.csv(immunization_data, "immunization_data.csv")
+# EDA
+get_variable_labels(immunization_data) -> immunization_data_labels
+
+immunization_data %>% 
+  group_by(v101.y) %>% 
+  ggplot(aes(x = v101.x))+
+  geom_bar()
+
+# Average education level across states
+
+immunization_data %>% 
+  group_by(v101.x) %>% 
+  summarise(avg_edu = mean(v133)) %>% 
+  ggplot(aes(x = v101.x, y = avg_edu)) +
+  geom_bar(stat = "identity")
 
 # get variable labels/definitions
 get_variable_labels(mr_data) -> mr_data_var_labels 
@@ -101,23 +158,47 @@ get_variable_labels(br_data) -> br_data_var_labels
 get_variable_labels(cr_data) -> cr_data_var_labels 
 
 # search  the variables that we need after checking the labels
-search_variables(datasets$FileName[c(1,2,7,8)], variables = c('v101','mv501', 'v218', 'mv130',
-                                                       'mv106', 'mv131', 'v121',
+
+vars = c('caseid', 'v101','mv501', 'v218', 'mv130','mv106', 'mv131', 'v121',
                                                        'v130', 'v131', 'v133', 'v150',
                                                        'v151', 'v152', 'mv102',
                                                        'mv106', 'mv130', 'mv131',
                                                        'h9a', 'h57', 'h58',
-                                                       'mv024', 'v106'),
-                 reformat = TRUE)-> variables
+                                                       'mv024', 'v106')
+names(vars) <- 1:length(vars)
+
+# mr final data
+search_variables(datasets$FileName[8], variables = vars) %>% 
+  extract_dhs(.,add_geo = FALSE) %>% 
+  `[[`(1) %>% 
+  haven::as_factor(only_labelled = TRUE) -> final_data_mr
+
+# br final data
+search_variables(datasets$FileName[1], variables = vars) %>% 
+  extract_dhs(.,add_geo = FALSE) %>% 
+  `[[`(1) %>% 
+  haven::as_factor(only_labelled = TRUE) -> final_data_br
+
+# br final data
+search_variables(datasets$FileName[7], variables = vars) %>% 
+  extract_dhs(.,add_geo = FALSE) %>% 
+  `[[`(1) %>% 
+  haven::as_factor(only_labelled = TRUE) -> final_data_kr
+
+# br final data
+search_variables(datasets$FileName[2], variables = vars) %>% 
+  extract_dhs(.,add_geo = FALSE) %>% 
+  `[[`(1) %>% 
+  haven::as_factor(only_labelled = TRUE) -> final_data_cr
 
 # now extract the data
-extract_dhs(variables, add_geo= FALSE) -> final_data
+#  extract_dhs(variables, add_geo= FALSE) -> final_data
 
-rbind_labelled(final_data) -> final_data_trial
+#rbind_labelled(final_data) -> final_data_trial
 
-final_data_tibble <- final_data %>% 
-  bind_cols() %>% 
-  haven::as_factor(only_labelled = TRUE)
+#final_data_tibble <- final_data %>% 
+#  bind_cols() %>% 
+ # haven::as_factor(only_labelled = TRUE)
 
 ```
 
