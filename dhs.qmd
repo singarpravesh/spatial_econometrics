@@ -70,7 +70,10 @@ dhs_indicators(countryIds = "IA", indicatorIds = "CH_DIAR_C_DIA", )
 ```{r}
 # set your credentials
 set_rdhs_config(email = "pravesh.econ@presiuniv.ac.in",
-                project = "ecological study of health")
+                project = "ecological study of health",
+                config_path = "~/.rdhs.json",
+                data_frame = "data.table::as.data.table",
+                global = TRUE)
 ```
 
 ```{r}
@@ -94,7 +97,7 @@ get_variable_labels(mr_data) -> mr_data_var_labels
 get_variable_labels(kr_data) -> kr_data_var_labels
 
 # search  the variables that we need after checking the labels
-search_variables(datasets$FileName[7:8], variables = c('mv106', 'mv107', 'mv130'))-> variables
+search_variables(datasets$FileName, variables = c('v101', 'mv130'))-> variables
 
 # now extract the data
 extract_dhs(variables, add_geo= TRUE) -> final_data_mr
