@@ -84,40 +84,41 @@ str(datasets)
 # download datasets
 kr <- get_datasets(datasets$FileName[7]) 
 mr <- get_datasets(datasets$FileName[8])
+br <- get_datasets(datasets$FileName[1])
+cr <- get_datasets(datasets$FileName[2])
+hr <- get_datasets(datasets$FileName[5])
 
 # read the data
 readRDS(mr$IAMR7EFL) -> mr_data 
 readRDS(kr$IAKR7EFL) -> kr_data
+readRDS(br$IABR7EFL) -> br_data
+readRDS(cr$IACR7EFL) -> cr_data
 
 # get variable labels/definitions
-get_variable_labels(mr_data) -> mr_data_var_labels
-get_variable_labels(kr_data) -> kr_data_var_labels
+get_variable_labels(mr_data) -> mr_data_var_labels 
+get_variable_labels(kr_data) -> kr_data_var_labels 
+get_variable_labels(br_data) -> br_data_var_labels 
+get_variable_labels(cr_data) -> cr_data_var_labels 
 
 # search  the variables that we need after checking the labels
-search_variables(datasets$FileName[7:8], variables = c('mv106', 'mv107', 'mv130'))-> variables
+search_variables(datasets$FileName[c(1,2,7,8)], variables = c('v101','mv501', 'v218', 'mv130',
+                                                       'mv106', 'mv131', 'v121',
+                                                       'v130', 'v131', 'v133', 'v150',
+                                                       'v151', 'v152', 'mv102',
+                                                       'mv106', 'mv130', 'mv131',
+                                                       'h9a', 'h57', 'h58',
+                                                       'mv024', 'v106'),
+                 reformat = TRUE)-> variables
 
 # now extract the data
-extract_dhs(variables, add_geo= TRUE) -> final_data_mr
+extract_dhs(variables, add_geo= FALSE) -> final_data
 
-# convert the haven labelled columns and list to a tibble
-process_hvn_lbll <- function(df) {
-  df %>%
-    mutate(across(where(~ inherits(.x, "hvn_lbll")), as.character)) # Or as_factor, as.vector
-}
+rbind_labelled(final_data) -> final_data_trial
 
-# Process all data frames in the list
-final_data_mr <- map(final_data_mr, function(item) {
-  if (is.data.frame(item)) {
-    process_hvn_lbll(item)
-  } else {
-    item
-  }
-})
+final_data_tibble <- final_data %>% 
+  bind_cols() %>% 
+  haven::as_factor(only_labelled = TRUE)
 
-# Combine into a single data frame
-final_df_mr <- bind_rows(final_data_mr) %>% as_tibble()
-
-summary(final_df)
 ```
 
 ```{r}
