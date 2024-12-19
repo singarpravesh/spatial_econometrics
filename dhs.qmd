@@ -73,17 +73,31 @@ set_rdhs_config(email = "pravesh.econ@presiuniv.ac.in",
                 project = "ecological study of health",
                 config_path = "~/.rdhs.json",
                 data_frame = "data.table::as.data.table",
-                global = TRUE)
+                global = TRUE,
+                verbose_download = FALSE,
+                timeout = 1000)
 ```
 
 ```{r}
+# the first time we call this function, rdhs will make the API request
+microbenchmark::microbenchmark(dhs_surveys(surveyYear = 2020),times = 1)
 # dhs datasets
 dhs_datasets(countryIds = "IA",
              surveyYearStart = 2020, fileFormat = "Flat") -> datasets
+
 str(datasets)
 ```
 
 ```{r}
+gc()
+
+# download all datasets
+
+get_datasets(datasets$FileName, reformat = TRUE) -> all_data
+
+
+
+
 # download datasets
 kr <- get_datasets(datasets$FileName[7]) 
 mr <- get_datasets(datasets$FileName[8])
