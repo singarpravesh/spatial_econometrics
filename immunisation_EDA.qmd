@@ -1,0 +1,38 @@
+---
+title: "Immunisation"
+format: pdf
+editor: visual
+---
+
+Lets first read the data that I have sent you.
+```{r}
+read.csv('immunization_data.csv') -> im_data 
+```
+
+So lets look at the structure of the data
+```{r}
+str(im_data)
+```
+
+Load the required packages.
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(rdhs)
+library(haven)
+```
+
+
+## Average education level across states
+
+```{r}
+im_data %>% 
+  group_by(v101.x) %>% 
+  summarise(avg_edu = mean(v133)) %>% 
+  ggplot(aes(x = reorder(v101.x, avg_edu), y = avg_edu)) +
+  geom_bar(stat = "identity") +
+  labs(x = "States",
+       y = "Mean Years of Schooling",
+       title = "Average Education Across States in India",
+       caption = "The numbers are the state codes in DHS 7 (2019-21)")
+```
+
